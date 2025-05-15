@@ -1,35 +1,35 @@
 if [ "$1" == "-c" ]; then
     echo "Cleaning build..."
     make clean
-    rm -rf output
-    mkdir -p output
+    rm -rf scratch/output
+    mkdir -p scratch/output
 fi
 make
-make dump > output/dump.txt
-make symbols > output/symbols.txt
-make sections > output/sections.txt
+make dump > scratch/output/dump.txt
+make symbols > scratch/output/symbols.txt
+make sections > scratch/output/sections.txt
 
-mkdir -p output
+mkdir -p scratch/output
 
 # Dumping symbols using nm and objdump
-riscv32-unknown-elf-nm -n -S bin/main.elf > output/nm.txt
-echo "" >> output/nm.txt
-echo "Dumping symbols section (with objdump)..." >> output/nm.txt
-riscv32-unknown-elf-objdump -t bin/main.elf | sort >> output/nm.txt
-riscv32-unknown-elf-objdump -D bin/main.elf > output/disas.txt
+riscv32-unknown-elf-nm -n -S build/bin/main.elf > scratch/output/nm.txt
+echo "" >> scratch/output/nm.txt
+echo "Dumping symbols section (with objdump)..." >> scratch/output/nm.txt
+riscv32-unknown-elf-objdump -t build/bin/main.elf | sort >> scratch/output/nm.txt
+riscv32-unknown-elf-objdump -D build/bin/main.elf > scratch/output/disas.txt
 
 # Dumping sections and symbols of main.o using nm and objdump
-riscv32-unknown-elf-nm -n -S obj/src/main.o > output/nm_main.txt
-echo "" >> output/nm_main.txt
-echo "Dumping sections..." >> output/nm_main.txt
-riscv32-unknown-elf-readelf -S obj/src/main.o >> output/nm_main.txt
-echo "" >> output/nm_main.txt
-echo "Dumping symbols section (with objdump)..." >> output/nm_main.txt
-riscv32-unknown-elf-objdump -t obj/src/main.o | sort >> output/nm_main.txt
+riscv32-unknown-elf-nm -n -S build/obj/src/main.o > scratch/output/nm_main.txt
+echo "" >> scratch/output/nm_main.txt
+echo "Dumping sections..." >> scratch/output/nm_main.txt
+riscv32-unknown-elf-readelf -S build/obj/src/main.o >> scratch/output/nm_main.txt
+echo "" >> scratch/output/nm_main.txt
+echo "Dumping symbols section (with objdump)..." >> scratch/output/nm_main.txt
+riscv32-unknown-elf-objdump -t build/obj/src/main.o | sort >> scratch/output/nm_main.txt
 
 # Creating programs files
-executePython bin/main.elf bin/testLib.h testLib
-# executePython --format sv bin/main.elf bin/testLib.svh testLib
-# executePython --format coe bin/main.elf bin/instruction.coe bin/RAM.coe
+executePython build/bin/main.elf build/bin/testLib.h testLib
+# executePython --format sv build/bin/main.elf build/bin/testLib.svh testLib
+# executePython --format coe build/bin/main.elf build/bin/instruction.coe build/bin/RAM.coe
 
-executePython bin/main.elf ~/workspace/TestCPU/src/programs/testLibProgram.h LibProgram
+executePython build/bin/main.elf ~/workspace/TestCPU/src/programs/testLibProgram.h LibProgram
