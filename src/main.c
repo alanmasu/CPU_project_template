@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <main.h>
-#include <printf.h>
 #include <utilities.h>
 #include <UART.h>
 
