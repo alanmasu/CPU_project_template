@@ -17,7 +17,7 @@ void *_sbrk(int incr) {
     uint8_t* prev = heap_ptr;
     if (heap_ptr + incr > (uint8_t*)__stack_pointer) {
         errno = ENOMEM;
-        return (void *)-1;
+        return (void *)NULL;
     }
     heap_ptr += incr;
     return (void *)prev;
