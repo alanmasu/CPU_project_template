@@ -80,10 +80,6 @@ def extract_text_section_to_c(file_path, output_path, programName):
                 c_content += f"#define {programName}_DATA_SIZE {data_size}\n"
             else:
                 c_content += "// .data section non trovata\n"
-            
-            # Aggiunta della define per __global_pointer
-            if global_pointer_val is not None:
-                c_content += f"\n#define GLOBAL_POINTER_VAL 0x{global_pointer_val:08x}\n"
                         
             c_content += "\n"
             

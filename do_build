@@ -10,16 +10,18 @@ OPTIND=1
 
 # Resetta le variabili
 TESTING=0
+ALL_TEST=0
 TEST_FILE=""
 FILE=""
 SIMULATION_PREV=${SIMULATION:-0}
 SIMULATION=0
+ALL_SIM=0
 
 ## If -c option is provided, clean the build
 ## If -t option is provided, build the test and export them to the test Project (~/workspace/Test_GPIO/src/programs)
 ## If -f option is provided, the 'file' is exported to the loader progam in the workspace as 'testLibProgram'
 
-while getopts "ctsf:" opt; do
+while getopts "ctTsSf:" opt; do
     case $opt in
         c)
             make clean
@@ -27,8 +29,16 @@ while getopts "ctsf:" opt; do
         t)
             TESTING=1
             ;;
+        T)
+            TESTING=1
+            ALL_TEST=1
+            ;;
         s) 
             SIMULATION=1
+            ;;
+        S) 
+            SIMULATION=1
+            ALL_SIM=1
             ;;
         f) 
             FILE=$OPTARG
@@ -46,25 +56,31 @@ if [ "$SIMULATION" -eq 1 ]; then
         make cleanall
     fi
     make sim
-    executePython build/bin/test/test_BTPU build/bin/testBTPU.h testBTPU
-    executePython build/bin/test/test_MatMul build/bin/testMatMul.h testMatMul
+    if [ $ALL_SIM -eq 1 ]; then
+        executePython build/bin/test/test_BTPU build/bin/testBTPU.h testBTPU
+        executePython build/bin/test/test_MatMul build/bin/testMatMul.h testMatMul
 
-    executePython --format sv build/bin/test/test_BTPU build/bin/testBTPU.svh testBTPU
-    executePython --format sv build/bin/test/test_BTPU "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/testBTPUProgram.svh" testBTPU
+        executePython --format sv build/bin/test/test_BTPU build/bin/testBTPU.svh testBTPU
+        executePython --format sv build/bin/test/test_BTPU "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/testBTPUProgram.svh" testBTPU
 
-    # executePython --format sv build/bin/test/test_MatMul build/bin/testMatMul.svh testMatMul
-    # executePython --format sv build/bin/test/test_MatMul "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/test_MatMulProgram.svh" testMatMul
+        # executePython --format sv build/bin/test/test_MatMul build/bin/testMatMul.svh testMatMul
+        # executePython --format sv build/bin/test/test_MatMul "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/test_MatMulProgram.svh" testMatMul
 
-    executePython --format sv build/bin/test/test_SerialCode build/bin/test_SerialCodeProgram.svh test_SerialCode
-    executePython --format sv build/bin/test/test_SerialCode "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/test_SerialCodeProgram.svh" test_SerialCode
-    executePython -s scripts/getSymbols.py build/bin/test/test_SerialCode --format sv -a -o "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/test_SerialCodeProgram.svh"
-    riscv32-unknown-elf-objdump -D build/bin/test/test_SerialCode > scratch/output/test_SerialCode_disas.txt
+        executePython --format sv build/bin/test/test_SerialCode build/bin/test_SerialCodeProgram.svh test_SerialCode
+        executePython --format sv build/bin/test/test_SerialCode "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/test_SerialCodeProgram.svh" test_SerialCode
+        executePython -s scripts/getSymbols.py build/bin/test/test_SerialCode --format sv -a -o "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/test_SerialCodeProgram.svh"
+        riscv32-unknown-elf-objdump -D build/bin/test/test_SerialCode > scratch/output/test_SerialCode_disas.txt
+    fi
 
-    executePython --format sv build/bin/test/test_LoadStoreBTPU build/bin/test_LoadStoreBTPU.svh test_LoadStoreBTPU
-    riscv32-unknown-elf-objdump -D build/bin/test/test_LoadStoreBTPU > scratch/output/test_LoadStoreBTPU_disas.txt
+    executePython --format sv build/bin/test/test_TimerContinuous "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerContinuous.svh" test_TimerContinuous
+    executePython -s scripts/getSymbols.py build/bin/test/test_TimerContinuous --format sv -a -o "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerContinuous.svh"
+    riscv32-unknown-elf-objdump -D build/bin/test/test_TimerContinuous > scratch/output/test_TimerContinuous_disas.txt
+    riscv32-unknown-elf-readelf -S build/bin/test/test_TimerContinuous > scratch/output/test_TimerContinuous_sections.txt
 
-    executePython --format sv build/bin/test/test_LoadStoreBTPU "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/test_LoadStoreBTPUProgram.svh" test_LoadStoreBTPU
-    executePython -s scripts/getSymbols.py build/bin/test/test_LoadStoreBTPU --format sv -a -o "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/test_LoadStoreBTPUProgram.svh"
+    executePython --format sv build/bin/test/test_TimerCapture "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerCapture.svh" test_TimerCapture
+    executePython -s scripts/getSymbols.py build/bin/test/test_TimerCapture --format sv -a -o "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerCapture.svh"
+    riscv32-unknown-elf-objdump -D build/bin/test/test_TimerCapture > scratch/output/test_TimerCapture_disas.txt
+    riscv32-unknown-elf-readelf -S build/bin/test/test_TimerCapture > scratch/output/test_TimerCapture_sections.txt
 else
     if [ "$SIMULATION_PREV" -eq 1 ]; then
         echo "Cleaning previous simulation build..."
@@ -115,18 +131,30 @@ else
 fi
 
 # Se i test sono abilitati, esporta i test
-if [ $TESTING -eq 1 ]; then
+if [ $ALL_TEST -eq 1 ]; then
     executePython build/bin/test/test_BTPU ~/workspace/Test_GPIO/src/programs/test_BTPU.h test_BTPU
     executePython build/bin/test/test_MatMul ~/workspace/Test_GPIO/src/programs/test_MatMul.h test_MatMul
     executePython build/bin/test/test_SerialCode ~/workspace/Test_GPIO/src/programs/test_SerialCode.h test_SerialCode
     executePython -s scripts/getSymbols.py build/bin/test/test_SerialCode -a -o ~/workspace/Test_GPIO/src/programs/test_SerialCode.h
-    executePython build/bin/test/test_LoadStoreBTPU ~/workspace/Test_GPIO/src/programs/test_LoadStoreBTPU.h test_LoadStoreBTPU
-    executePython -s scripts/getSymbols.py build/bin/test/test_LoadStoreBTPU -a -o ~/workspace/Test_GPIO/src/programs/test_LoadStoreBTPU.h
 
     riscv32-unknown-elf-objdump -D build/bin/test/test_BTPU > scratch/output/testBTPU_disas.txt
     riscv32-unknown-elf-objdump -D build/bin/test/test_MatMul > scratch/output/testMatMul_disas.txt
     riscv32-unknown-elf-objdump -D build/bin/test/test_SerialCode > scratch/output/test_SerialCode_disas.txt
-    riscv32-unknown-elf-objdump -D build/bin/test/test_LoadStoreBTPU > scratch/output/test_LoadStoreBTPU_disas.txt
     # Dumping symbols sections
     riscv32-unknown-elf-objdump -t build/bin/test/test_SerialCode | sort > scratch/output/test_SerialCode_symbols.txt
+fi
+
+if [ $TESTING -eq 1 ]; then
+
+    executePython build/bin/test/test_TimerContinuous ~/workspace/Test_GPIO/src/programs/test_TimerContinuous.h test_TimerContinuous
+    executePython build/bin/test/test_TimerCapture ~/workspace/Test_GPIO/src/programs/test_TimerCapture.h test_TimerCapture
+
+    executePython -s scripts/getSymbols.py build/bin/test/test_TimerContinuous -a -o ~/workspace/Test_GPIO/src/programs/test_TimerContinuous.h
+    executePython -s scripts/getSymbols.py build/bin/test/test_TimerCapture -a -o ~/workspace/Test_GPIO/src/programs/test_TimerCapture.h
+
+    riscv32-unknown-elf-objdump -D build/bin/test/test_TimerContinuous > scratch/output/test_TimerContinuous_sections.txt
+    riscv32-unknown-elf-objdump -D build/bin/test/test_TimerCapture > scratch/output/test_TimerCapture_sections.txt
+    # Dumping symbols sections
+    riscv32-unknown-elf-objdump -t build/bin/test/test_TimerContinuous | sort > scratch/output/test_TimerContinuous_symbols.txt
+    riscv32-unknown-elf-objdump -t build/bin/test/test_TimerCapture | sort > scratch/output/test_TimerCapture_symbols.txt
 fi

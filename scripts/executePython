@@ -8,8 +8,8 @@ EXEC_SCRIPT=0
 while getopts ":s:" opt; do
     case $opt in
         s)
-            echo "Executing Python script: $OPTARG"
-            echo "Arguments: ${@:3}"
+            # echo "Executing Python script: $OPTARG"
+            # echo "Arguments: ${@:3}"
             python3 "$OPTARG" "${@:3}"
             EXEC_SCRIPT=1
             ;;
