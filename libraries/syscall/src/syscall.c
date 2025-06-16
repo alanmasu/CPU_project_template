@@ -31,7 +31,9 @@ int _write(int fd, const void *buf, size_t count) {
 
 int _read(int fd, void *buf, size_t count) {
     // Inserisci qui codice per leggere da UART o simile
-    return UARTRead((uint8_t*)buf, count, UART_READ_BLOCKING);
+    return UARTRead((uint8_t*)buf, count, UART_READ_WAIT_NONZERO);
+    // return UARTRead((uint8_t*)buf, count, UART_READ_NONBLOCKING);
+    // return UARTRead((uint8_t*)buf, count, UART_READ_BLOCKING);
 }
 
 void _putchar(char character){

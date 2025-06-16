@@ -65,6 +65,7 @@
 
 typedef enum UARTReadMode_t{
   UART_READ_BLOCKING,
+  UART_READ_WAIT_NONZERO,
   UART_READ_NONBLOCKING
 } UARTReadMode_t;
 
