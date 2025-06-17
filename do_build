@@ -70,17 +70,17 @@ if [ "$SIMULATION" -eq 1 ]; then
         executePython --format sv build/bin/test/test_SerialCode "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/test_SerialCodeProgram.svh" test_SerialCode
         executePython -s scripts/getSymbols.py build/bin/test/test_SerialCode --format sv -a -o "/home/alan.masutti/Documents/CPU Repo/testbench/BNN/test_SerialCodeProgram.svh"
         riscv32-unknown-elf-objdump -D build/bin/test/test_SerialCode > scratch/output/test_SerialCode_disas.txt
+
+        executePython --format sv build/bin/test/test_TimerContinuous "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerContinuous.svh" test_TimerContinuous
+        executePython -s scripts/getSymbols.py build/bin/test/test_TimerContinuous --format sv -a -o "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerContinuous.svh"
+        riscv32-unknown-elf-objdump -D build/bin/test/test_TimerContinuous > scratch/output/test_TimerContinuous_disas.txt
+        riscv32-unknown-elf-readelf -S build/bin/test/test_TimerContinuous > scratch/output/test_TimerContinuous_sections.txt
+
+        executePython --format sv build/bin/test/test_TimerCapture "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerCapture.svh" test_TimerCapture
+        executePython -s scripts/getSymbols.py build/bin/test/test_TimerCapture --format sv -a -o "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerCapture.svh"
+        riscv32-unknown-elf-objdump -D build/bin/test/test_TimerCapture > scratch/output/test_TimerCapture_disas.txt
+        riscv32-unknown-elf-readelf -S build/bin/test/test_TimerCapture > scratch/output/test_TimerCapture_sections.txt
     fi
-
-    executePython --format sv build/bin/test/test_TimerContinuous "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerContinuous.svh" test_TimerContinuous
-    executePython -s scripts/getSymbols.py build/bin/test/test_TimerContinuous --format sv -a -o "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerContinuous.svh"
-    riscv32-unknown-elf-objdump -D build/bin/test/test_TimerContinuous > scratch/output/test_TimerContinuous_disas.txt
-    riscv32-unknown-elf-readelf -S build/bin/test/test_TimerContinuous > scratch/output/test_TimerContinuous_sections.txt
-
-    executePython --format sv build/bin/test/test_TimerCapture "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerCapture.svh" test_TimerCapture
-    executePython -s scripts/getSymbols.py build/bin/test/test_TimerCapture --format sv -a -o "/home/alan.masutti/Documents/CPU Repo/testbench/Timer/test_TimerCapture.svh"
-    riscv32-unknown-elf-objdump -D build/bin/test/test_TimerCapture > scratch/output/test_TimerCapture_disas.txt
-    riscv32-unknown-elf-readelf -S build/bin/test/test_TimerCapture > scratch/output/test_TimerCapture_sections.txt
 else
     if [ "$SIMULATION_PREV" -eq 1 ]; then
         echo "Cleaning previous simulation build..."
@@ -140,11 +140,6 @@ if [ $ALL_TEST -eq 1 ]; then
     riscv32-unknown-elf-objdump -D build/bin/test/test_BTPU > scratch/output/testBTPU_disas.txt
     riscv32-unknown-elf-objdump -D build/bin/test/test_MatMul > scratch/output/testMatMul_disas.txt
     riscv32-unknown-elf-objdump -D build/bin/test/test_SerialCode > scratch/output/test_SerialCode_disas.txt
-    # Dumping symbols sections
-    riscv32-unknown-elf-objdump -t build/bin/test/test_SerialCode | sort > scratch/output/test_SerialCode_symbols.txt
-fi
-
-if [ $TESTING -eq 1 ]; then
 
     executePython build/bin/test/test_TimerContinuous ~/workspace/Test_GPIO/src/programs/test_TimerContinuous.h test_TimerContinuous
     executePython build/bin/test/test_TimerCapture ~/workspace/Test_GPIO/src/programs/test_TimerCapture.h test_TimerCapture
@@ -154,7 +149,13 @@ if [ $TESTING -eq 1 ]; then
 
     riscv32-unknown-elf-objdump -D build/bin/test/test_TimerContinuous > scratch/output/test_TimerContinuous_sections.txt
     riscv32-unknown-elf-objdump -D build/bin/test/test_TimerCapture > scratch/output/test_TimerCapture_sections.txt
+
     # Dumping symbols sections
-    riscv32-unknown-elf-objdump -t build/bin/test/test_TimerContinuous | sort > scratch/output/test_TimerContinuous_symbols.txt
+    riscv32-unknown-elf-objdump -t build/bin/test/test_SerialCode | sort > scratch/output/test_SerialCode_symbols.txt
     riscv32-unknown-elf-objdump -t build/bin/test/test_TimerCapture | sort > scratch/output/test_TimerCapture_symbols.txt
+    riscv32-unknown-elf-objdump -t build/bin/test/test_TimerContinuous | sort > scratch/output/test_TimerContinuous_symbols.txt
+fi
+
+if [ $TESTING -eq 1 ]; then
+    echo "Nothing to do for testing this project. Try to run all test whit option -T"
 fi
