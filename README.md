@@ -58,6 +58,9 @@ le sotto directory di `test` in eseguibili separati assieme alle librerie. Utile
 Il file `do_build` è uno script che oltre ad eseguire le direttive make accetta delle opzioni e genera ulteriori file, esportando anche gli eseguibili in vari formati.
 Accetta le seguenti opzioni:
  - `-c` Esegue un clean prima di compilare
- - `-s` Esporta alcuni eseguibili nelle directory di simulazione
- - `-t` Compila i test esportandoli in header per la compilazione assieme agli ARM
+ - `-s` Compila in modalità simulazione, inoltre esporta gli eseguibili dei test **di questo progetto** in SystemVerilog nella directory del progetto della CPU.
+ - `-S` Come `-s` ma esporta gli eseguibili di tutti i test in SystemVerilog.
+ - `-t` Compila i test **di questo progetto** esportandoli in header per la compilazione assieme agli ARM
+ - `-T` Come `-t` ma esporta tutti i test in header per la compilazione assieme agli ARM
  - `-f <file>` Esporta l'eseguibile `<file>` in un header nel progetto del loader, nel file `testLibProgram.h`
+> **NOTA**: per definire quali test fanno parte del progetto, è necessario modificare lo script.
