@@ -213,8 +213,13 @@ int main(int argc, char const *argv[]){
         OLED0Data->value = *((uint32_t*)data);
         OLED0Data->data[3] = lenReaded;
         ///// END OLD CODE /////
+        if(GPIO0Port->PORT_A.GPIO4 == 1){
+            float temp = *((uint32_t*)data) / 128.0f;
+            printf("Temperatura letta: %f C\n", temp);
+        }else{
+            printf("Temperatura letta: %d C\n", *((uint32_t*)data));
+        }
 
-        printf("Temperatura letta: %d C\n", *((uint32_t*)data));
         
         wait(0);
         // wait(0);
