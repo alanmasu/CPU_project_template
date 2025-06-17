@@ -156,6 +156,7 @@ if [ $ALL_TEST -eq 1 ]; then
     riscv32-unknown-elf-objdump -t build/bin/test/test_TimerContinuous | sort > scratch/output/test_TimerContinuous_symbols.txt
 fi
 
+#Esporta i test del progetto corrente
 if [ $TESTING -eq 1 ]; then
     echo "Nothing to do for testing this project. Try to run all test whit option -T"
 fi
